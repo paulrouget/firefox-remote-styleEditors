@@ -1,9 +1,17 @@
-from client import MarionetteClient
+#!/usr/bin/python
+from client import MozClient
+from fxui import MozUI
 
 
-client = MarionetteClient("localhost", 6000)
-res = client.send({'to':'root', 'type': 'listTabs'})
-browserActor = res["chromeDebugger"]
+client = MozClient("localhost", 6000)
+ui = MozUI(client)
+tab = ui.getSelectedTab()
+ss = tab.getStyleSheets()
+print ss[0].getSource()
+
+#res = client.send({'to':'root', 'type': 'listTabs'})
+#print res
+#browserActor = res["chromeDebugger"]
 #styleEditorActor = res["tabs"][2]["styleEditorActor"]
 #res = client.send({'to':styleEditorActor, 'type':"getStyleSheets"})
 ##print res["styleSheets"][0]
