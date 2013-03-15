@@ -32,6 +32,9 @@ class FirefoxCssCommand(sublime_plugin.TextCommand):
     tab = ui.getSelectedTab()
     self.ss = tab.getStyleSheets()
 
+    self.view.set_status("firefox-sync", "fx:connected")
+    #FIXME: when do we hide that? No disconnected event yet.
+
     urls = [basename(urlparse(s.href).path) for s in self.ss]
     sublime.active_window().show_quick_panel(urls, self.on_chosen)
 
@@ -70,23 +73,16 @@ class ModificationListener(sublime_plugin.EventListener):
 
     text = view.substr(sublime.Region(0, view.size()))
 
-    if len(text) == 0:
-      del threads[id]
-      print "not pushing: text is empty"
-      return
-
     threads[id] = FirefoxCssPusher(stylesheets[id], text)
     print "pushing"
     return
 
 class FirefoxCssPusher(threading.Thread):
   def __init__(self, stylesheet, text):
-    print "thread: __init__"
     self.stylesheet = stylesheet
     self.text = text
     threading.Thread.__init__(self)
     self.start()
   def run(self):
-    print "thread: run"
     self.stylesheet.pushSource(self.text, True)
 
