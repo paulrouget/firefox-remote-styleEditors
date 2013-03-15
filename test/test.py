@@ -1,4 +1,6 @@
 #!/usr/bin/python
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'libs'))
 from client import MozClient
 from fxui import MozUI
 
@@ -7,7 +9,7 @@ client = MozClient("localhost", 6000)
 ui = MozUI(client)
 tab = ui.getSelectedTab()
 ss = tab.getStyleSheets()
-print ss[0].getSource()
+print ss[0].href
 
 #res = client.send({'to':'root', 'type': 'listTabs'})
 #print res
