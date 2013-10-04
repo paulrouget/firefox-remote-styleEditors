@@ -26,32 +26,27 @@ class FirefoxCssCommand(sublime_plugin.TextCommand):
       return
 
     self.edit = edit
-
     client = MozClient("localhost", 6000)
-    ui = MozUI(client)
-    tab = ui.getSelectedTab()
-    self.ss = tab.getStyleSheets()
+    self.ui = MozUI(client)
+    self.view.set_status("firefox-sync", "fx:connected") #FIXME: when do we hide that? No disconnected event yet.
+    self.apps = self.ui.getApplist()
+    sublime.active_window().show_quick_panel(self.apps, self.on_app_chosen)
 
-    self.view.set_status("firefox-sync", "fx:connected")
-    #FIXME: when do we hide that? No disconnected event yet.
 
+  def on_app_chosen(self, idx):
+    manifest = self.apps[idx]
+    self.ss = self.ui.getStyleSheetsForApp(manifest)
     urls = [basename(urlparse(s.href).path) for s in self.ss]
-    sublime.active_window().show_quick_panel(urls, self.on_chosen)
+    sublime.active_window().show_quick_panel(urls, self.on_ss_chosen)
 
-  def on_chosen(self, idx):
+  def on_ss_chosen(self, idx):
     global threads, stylesheets
-
     s = self.ss[idx]
     self.view.set_syntax_file('Packages/CSS/CSS.tmLanguage')
     self.view.insert(self.edit, 0, s.getSource())
-
     self.edit = None
-
     id = self.view.buffer_id()
-
     stylesheets[id] = s
-
-    return
 
 class ModificationListener(sublime_plugin.EventListener):
   def on_modified(self, view):

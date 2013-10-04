@@ -7,9 +7,10 @@ from fxui import MozUI
 
 client = MozClient("localhost", 6000)
 ui = MozUI(client)
-tab = ui.getSelectedTab()
-ss = tab.getStyleSheets()
-print ss[0].href
+#print ui.getStyleSheetsForApp("app://settings.gaiamobile.org/manifest.webapp")
+#tab = ui.getSelectedTab()
+#ss = tab.getStyleSheets()
+#print ss[0].href
 
 #res = client.send({'to':'root', 'type': 'listTabs'})
 #print res

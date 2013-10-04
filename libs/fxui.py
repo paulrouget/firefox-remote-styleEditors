@@ -1,10 +1,28 @@
 class MozUI(object):
     def __init__(self, client):
         self.client = client
+        self.listTabsResult = self.client.send({'to':'root', 'type': 'listTabs'})
+
+    def getApplist(self):
+        webAppActor = self.listTabsResult['webappsActor']
+        res = self.client.send({'to': webAppActor, 'type': 'getAll'})
+        apps = [a["manifestURL"] for a in res["apps"]]
+        return apps
+
+    def getStyleSheetsForApp(self, app):
+        webAppActor = self.listTabsResult['webappsActor']
+        res = self.client.send({'to': webAppActor, 'type': 'getAppActor', 'manifestURL': app})
+        styleSheetActor = res['actor']['styleEditorActor']
+        res = self.client.send({'to': styleSheetActor, 'type': 'getStyleSheets'})
+
+        d = [{"actor":s["actor"], "href":s["href"], "disabled":s["disabled"]} for s in res["styleSheets"]]
+        d = [s for s in d if not s["disabled"]] #Filter our disabled styleSeets
+
+        return [MozStyleSheet(self.client, s["actor"], s["href"]) for s in d]
+
 
     def getTabList(self):
-        res = self.client.send({'to':'root', 'type': 'listTabs'})
-        l = [MozTab(self.client, t["url"], t["title"], t["styleEditorActor"], False) for t in res["tabs"]] 
+        l = [MozTab(self.client, t["url"], t["title"], t["styleEditorActor"], False) for t in self.listTabsResult["tabs"]] 
         l[res["selected"]].selected = True
         return l
 
