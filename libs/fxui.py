@@ -4,7 +4,7 @@ class MozUI(object):
 
     def getTabList(self):
         res = self.client.send({'to':'root', 'type': 'listTabs'})
-        l = [MozTab(self.client, t["url"], t["title"], t["styleEditorActor"], False) for t in res["tabs"]] 
+        l = [MozTab(self.client, t["url"], t["title"], t["styleSheetsActor"], False) for t in res["tabs"]] 
         l[res["selected"]].selected = True
         return l
 
