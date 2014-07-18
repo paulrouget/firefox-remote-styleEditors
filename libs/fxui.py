@@ -42,9 +42,8 @@ class MozStyleSheet(object):
       return "MozStyleSheet: " + self.href
     __repr__ = __str__
     def getSource(self):
-      self.client.send({'to':self.actor, 'type':"getText"})
-      res = self.client.receive()
-      return res["source"]
+      res = self.client.send({'to':self.actor, 'type':"getText"})
+      return res["text"]
     def pushSource(self, text, transition):
       self.client.send({'to':self.actor,'type':"update",'text': text,"transition":transition})
 
